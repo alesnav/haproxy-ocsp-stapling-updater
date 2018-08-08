@@ -301,8 +301,8 @@ if [ -e $CERT.ocsp ]; then
         grep "Next Update:" &>>$TMP/log
 
     if [ $? -eq 0 ]; then
-        CURR_EXP=`$OPENSSL_BIN ocsp -respin $CERT.ocsp -text -noverify | grep "Next Update:" | cut -d ':' -f 2-`
-        CURR_EXP_EPOCH=`date --date="$CURR_EXP" +%s`
+        CURR_EXP=`$OPENSSL_BIN ocsp -respin $CERT.ocsp -text -noverify | grep "Next Update:" | cut -d ':' -f 2- | sed "s/^[ \t]*//"`
+        CURR_EXP_EPOCH=`date -v "$CURR_EXP" +%s`
 
         if [ $? -ne 0 ]; then
             Error 3 "can't parse Next Update from current OCSP response"
