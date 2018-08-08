@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/local/bin/bash
 
 # HAProxy OCSP Stapling Updater
 # Copyright (c) 2015 Pier Carlo Chiodi - http://www.pierky.com
@@ -389,8 +389,8 @@ else
     Debug "EE certificate's fingerprint: $FP_EE"
 
     # get BEGIN CERTIFICATE and END CERTIFICATE separators
-    PEM_BEGIN_CERT="`head $TMP/ee.pem -n 1`"
-    PEM_END_CERT="`tail $TMP/ee.pem -n 1`"
+    PEM_BEGIN_CERT="`head -n 1 $TMP/ee.pem`"
+    PEM_END_CERT="`tail -n 1 $TMP/ee.pem`"
 
     # get number of certificates in the bundle file
     NUM_OF_CERTS=`cat $CERT | grep -e "$PEM_BEGIN_CERT" | wc -l`
@@ -551,7 +551,7 @@ if [ $DEBUG -eq 0 ]; then
             # update haproxy via local UNIX socket
             Debug "Updating haproxy."
 
-            echo "set ssl ocsp-response `base64 -w 0 $TMP/ocsp.der`" | $SOCAT_BIN stdio $HAPROXY_ADMIN_SOCKET &>>$TMP/log
+            echo "set ssl ocsp-response `$OPENSSL_BIN enc -base64 -A -in $TMP/ocsp.der`" | $SOCAT_BIN stdio $HAPROXY_ADMIN_SOCKET &>>$TMP/log
 
             if [ $? -ne 0 ]; then
                 Error 5 "can't update haproxy ssl ocsp-response using $HAPROXY_ADMIN_SOCKET socket"
